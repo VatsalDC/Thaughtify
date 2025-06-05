@@ -1,0 +1,74 @@
+{
+    "categories": [
+        {
+            "id": "1",
+            "name": "New Thoughts",
+            "description": "Recently added thoughts",
+            "icon": "new",
+            "featured": true
+        },
+        {
+            "id": "2",
+            "name": "Popular",
+            "description": "Most liked and shared thoughts",
+            "icon": "star",
+            "featured": true
+        },
+        {
+            "id": "3",
+            "name": "Personal Growth",
+            "description": "Thoughts about self-improvement and development",
+            "icon": "growth",
+            "featured": false
+        },
+        {
+            "id": "4",
+            "name": "Creativity",
+            "description": "Thoughts about creative thinking and innovation",
+            "icon": "lightbulb",
+            "featured": false
+        },
+        {
+            "id": "5",
+            "name": "Productivity",
+            "description": "Thoughts about getting things done",
+            "icon": "check",
+            "featured": false
+        },
+        {
+            "id": "6",
+            "name": "Mindfulness",
+            "description": "Thoughts about being present and mindful",
+            "icon": "meditation",
+            "featured": false
+        },
+        {
+            "id": "7",
+            "name": "Relationships",
+            "description": "Thoughts about building connections",
+            "icon": "people",
+            "featured": false
+        },
+        {
+            "id": "8",
+            "name": "Motivation",
+            "description": "Thoughts to inspire and motivate",
+            "icon": "rocket",
+            "featured": false
+        },
+        {
+            "id": "9",
+            "name": "Philosophy",
+            "description": "Thoughts about life and existence",
+            "icon": "brain",
+            "featured": false
+        },
+        {
+            "id": "10",
+            "name": "Spirituality",
+            "description": "Thoughts about spiritual growth",
+            "icon": "lotus",
+            "featured": false
+        }
+    ]
+}

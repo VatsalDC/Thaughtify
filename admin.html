@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="theme-color" content="#f5f5f5">
+    <meta name="description" content="Admin dashboard for managing Thaughtify content">
+    <title>Thaughtify Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Load scripts in correct order -->
+    <script>
+        function loadScripts() {
+            const scripts = [
+                'shared-thoughts.js',
+                'admin.js',
+                'js/navigation.js'
+            ];
+            
+            function loadScript(index) {
+                if (index >= scripts.length) {
+                    // All scripts loaded, initialize the admin
+                    if (typeof initializeAdmin === 'function') {
+                        initializeAdmin();
+                    }
+                    return;
+                }
+                
+                const script = document.createElement('script');
+                script.src = scripts[index];
+                script.onload = () => loadScript(index + 1);
+                script.onerror = () => {
+                    console.error('Failed to load script:', scripts[index]);
+                    loadScript(index + 1);
+                };
+                document.head.appendChild(script);
+            }
+            
+            loadScript(0);
+        }
+        
+        // Start loading scripts when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadScripts);
+        } else {
+            loadScripts();
+        }
+    </script>
+</head>
+<body class="admin-page">
+    <nav class="nav">
+        <h1 id="title">Thaughtify Admin</h1>
+        <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-menu">
+            <span class="hamburger">☰</span>
+        </button>
+        <div class="nav-overlay"></div>
+        <ul class="nav-menu" id="nav-menu" role="menu">
+            <li><a href="index.html" class="nav-link" role="menuitem">View Site</a></li>
+            <li><a href="#" class="nav-link" role="menuitem" id="logout-link">Logout</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+        <section class="admin-controls">
+            <!-- Statistics Section -->
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <h3>Total Thoughts</h3>
+                    <p id="total-thoughts">0</p>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <!-- Thought management buttons removed -->
+            </div>
+
+            <!-- Search -->
+            <div class="filter-container">
+                <input type="text" id="search-thoughts" placeholder="Search thoughts...">
+                <div class="custom-select">
+                    <div class="selected-option">Newest First</div>
+                    <div class="options-container">
+                        <div class="option" data-value="date-desc">Newest First</div>
+                        <div class="option" data-value="date-asc">Oldest First</div>
+                        <div class="option" data-value="likes">Most Liked</div>
+                    </div>
+                    <select id="sort-thoughts" style="display: none;">
+                        <option value="date-desc" selected>Newest First</option>
+                        <option value="date-asc">Oldest First</option>
+                        <option value="likes">Most Liked</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Thoughts Section -->
+        <div class="admin-note">
+            <p>To add or modify thoughts, please edit the <code>shared-thoughts.js</code> file directly.</p>
+            <p>Changes will be reflected here after refreshing the page.</p>
+        </div>
+        <h2 class="section-title">Thoughts live now</h2>
+        <!-- Thoughts Grid -->
+        <div class="thoughts-container" id="thoughts-container">
+            <!-- Thoughts and loading spinner will be dynamically added here by JS -->
+        </div>
+
+    <!-- User Edit Modal -->
+    <div id="user-edit-modal" class="modal">
+        <div class="modal-content">
+            <h2>Edit User</h2>
+            <form id="user-edit-form">
+                <div class="form-group">
+                    <label for="edit-username">Username:</label>
+                    <input type="text" id="edit-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-email">Email:</label>
+                    <input type="email" id="edit-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-password">New Password (leave blank to keep current):</label>
+                    <input type="password" id="edit-password">
+                </div>
+                <div class="form-group">
+                    <label for="edit-status">Account Status:</label>
+                    <select id="edit-status">
+                        <option value="active">Active</option>
+                        <option value="banned">Banned</option>
+                        <option value="restricted">Restricted</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-restrictions">Restrictions:</label>
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" name="restriction" value="cannotAdd">
+                            Cannot Add Thoughts
+                        </label>
+                        <label>
+                            <input type="checkbox" name="restriction" value="cannotDelete">
+                            Cannot Delete Thoughts
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="admin-btn">Save Changes</button>
+                    <button type="button" class="admin-btn" id="cancel-edit">Cancel</button>
+                </div>
+            </form>
+        </div>
+        </div>
+    </main>
+
+    <style>
+        /* Admin specific styles */
+        .admin-note {
+            background-color: #f8f9fa;
+            border-left: 4px solid #4a90e2;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+        
+        .admin-note p {
+            margin: 0.5rem 0;
+            color: #333;
+        }
+        
+        .admin-note code {
+            background-color: #e9ecef;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        .admin-page .main-content {
+            padding-top: 1.5rem;
+            padding-bottom: 3rem;
+        }
+
+        .admin-controls {
+            background: white;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.25rem;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card h3 {
+            margin: 0 0 0.5rem;
+            font-size: 0.95rem;
+            color: #6c757d;
+        }
+        
+        .stat-card p {
+            margin: 0;
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+
+        .filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+            align-items: center;
+        }
+
+        .thought-card {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .thought-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .thought-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .thought-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .edit-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            background: #4CAF50;
+            color: white;
+        }
+
+        .thought-content {
+            margin: 0 0 12px 0;
+            line-height: 1.6;
+        }
+
+        .thought-footer {
+            display: flex;
+            gap: 16px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .thought-author {
+            font-weight: bold;
+        }
+
+        .thought-category {
+            background: #f0f0f0;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .no-thoughts {
+            text-align: center;
+            color: #666;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            flex: 1;
+        }
+
+        .stat-card h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+
+        .stat-card p {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .quick-action-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .quick-action-btn:hover {
+            background: #45a049;
+        }
+
+        .user-list {
+            margin: 20px 0;
+        }
+
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .user-info {
+            display: flex;
+            gap: 10px;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .admin-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .admin-btn:hover {
+            background: #45a049;
+        }
+
+        .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+
+    .modal-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 500px;
+    }
+
+        @media (max-width: 768px) {
+            .admin-stats {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.75rem;
+            }
+            
+            .stat-card {
+                padding: 1rem 0.75rem;
+            }
+            
+            .stat-card h3 {
+                font-size: 0.85rem;
+            }
+            
+            .stat-card p {
+                font-size: 1.5rem;
+            }
+            
+            .filter-container {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.75rem;
+            }
+            
+            .filter-container > * {
+                width: 100%;
+            }
+            
+            .thought-card {
+                padding: 1rem;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 1rem;
+                padding: 1.25rem;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #f9f9f9;
+            border-top: 1px solid #eee;
+        }
+    </style>
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2025 Thaughtify Admin - Manage Content</p>
+        </div>
+    </footer>
+    <script>
+        // Mobile navigation toggle for admin
+        document.addEventListener('DOMContentLoaded', function() {
+            const navToggle = document.querySelector('.nav-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+            
+            if (navToggle && navMenu) {
+                navToggle.addEventListener('click', function() {
+                    navMenu.classList.toggle('active');
+                    this.classList.toggle('active');
+                });
+            }
+            
+            // Close mobile menu when clicking on a nav link
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    navMenu.classList.remove('active');
+                    navToggle.classList.remove('active');
+                });
+            });
+        });
+    </script>
+    <script>
+        // Clean up any existing service workers
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister();
+                }
+            });
+        }
+    </script>
+    <!-- Service worker registration removed -->
+</body>
+</html>
