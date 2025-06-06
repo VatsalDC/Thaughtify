@@ -162,7 +162,7 @@ const defaultThoughts = [
     },
     {
         id: '21',
-        title: "A good aim.",
+        title: "A Good Aim",
         content: "The aim of the wise is not to secure pleasure, but to avoid pain.",
         addedBy: 'Thaughtify',
         timestamp: '2025-06-06T12:56:00.000Z',
