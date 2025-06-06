@@ -1771,6 +1771,22 @@ footer {
     padding-top: 0.5rem;
     margin-top: 1rem;
     transition: all 0.3s ease;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+}
+
+.thought-category {
+    background: #f5f5f5;
+    color: #666;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: inline-block;
+    margin-right: 0.5rem;
+    border: 1px solid #e0e0e0;
 }
 
 .thought-card:hover .thought-meta {
