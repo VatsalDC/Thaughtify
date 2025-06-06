@@ -130,7 +130,7 @@ const defaultThoughts = [
     },
     {
         id: '17',
-        title: "Commit more",
+        title: "Commit More",
         content: "Life is continuously testing us for our level of Commitment.",
         addedBy: 'Thaughtify',
         timestamp: '2025-06-05T17:52:00.000Z',
@@ -146,7 +146,7 @@ const defaultThoughts = [
     },
     {
         id: '19',
-        title: "Individual Commitment helps in growth",
+        title: "Individual Commitment Helps in Growth",
         content: "Individual commitment to a group effort is what makes a company work effectively.",
         addedBy: 'Thaughtify',
         timestamp: '2025-06-06T12:56:00.000Z',
@@ -170,7 +170,7 @@ const defaultThoughts = [
     },
     {
         id: '22',
-        title: "Teamwork wins championships",
+        title: "Teamwork Wins Championships",
         content: "Talent wins game, but teamwork and intelligence wins championships.",
         addedBy: 'Thaughtify',
         timestamp: '2025-06-06T12:56:00.000Z',
@@ -178,7 +178,7 @@ const defaultThoughts = [
     },
     {
         id: '23',
-        title: "Create the future",
+        title: "Create the Future",
         content: "The best way to predict the future is to create it.",
         addedBy: 'Thaughtify',
         timestamp: '2025-06-06T12:56:00.000Z',
@@ -186,7 +186,7 @@ const defaultThoughts = [
     },
     {
         id: '24',
-        title: "Commitment opens the path",
+        title: "Commitment Opens the Path",
         content: "Commitment unlocks the door of imagination and vision.",
         addedBy: 'Thaughtify',
         timestamp: '2025-06-06T12:56:00.000Z',
@@ -194,7 +194,7 @@ const defaultThoughts = [
     },
     {
         id: '25',
-        title: "Remove unwanted doubts",
+        title: "Remove Unwanted Doubts",
         content: "The only limit to our realization of tomorrow is our doubts of today.",
         addedBy: 'Thaughtify',
         timestamp: '2025-06-06T12:56:00.000Z',
@@ -202,7 +202,7 @@ const defaultThoughts = [
     },
     {
         id: '26',
-        title: "Identity covers oneself",
+        title: "Identity Covers Oneself",
         content: "Identity is like a garment with which one covers oneself.",
         addedBy: 'Thaughtify',
         timestamp: '2025-06-06T12:56:00.000Z',
