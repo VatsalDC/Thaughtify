@@ -35,9 +35,6 @@ const thoughtsData = {
     nextId: 1
 };
 
-// Track initial load state
-let isInitialLoad = true;
-
 // Function to update nextId based on loaded thoughts
 function updateNextId() {
     if (window.defaultThoughts && window.defaultThoughts.length > 0) {
@@ -260,8 +257,7 @@ function loadThoughts() {
         updateNextId();
         
         // Render the thoughts
-        renderThoughts(isInitialLoad);
-        isInitialLoad = false;
+        renderThoughts();
         
     } catch (error) {
         console.error('Error loading thoughts:', error);
@@ -315,7 +311,7 @@ function createThoughtCard(thought) {
 }
 
 // Function to render thoughts
-function renderThoughts(showLoading = true) {
+function renderThoughts() {
     console.log('Rendering thoughts...');
     const container = document.getElementById('thoughts-container');
     if (!container) {
@@ -324,18 +320,8 @@ function renderThoughts(showLoading = true) {
     }
     
     try {
-        // Only show loading for initial load, not for searches
-        if (showLoading) {
-            container.innerHTML = `
-                <div class="container-loading">
-                    <div class="spinner"></div>
-                    <div class="loading-text">Loading thoughts...</div>
-                </div>`;
-            // Let the spinner render for a short moment
-            setTimeout(renderThoughtsInternal, 100);
-        } else {
-            renderThoughtsInternal();
-        }
+        // Skip loading state and render thoughts directly
+        renderThoughtsInternal();
     } catch (error) {
         console.error('Error rendering thoughts:', error);
         container.innerHTML = `
