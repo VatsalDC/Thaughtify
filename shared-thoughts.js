@@ -144,6 +144,70 @@ const defaultThoughts = [
         timestamp: '2025-06-05T17:52:00.000Z',
         category: 'Motivational'
     },
+    {
+        id: '19',
+        title: "Individual Commitment helps in growth",
+        content: "Individual commitment to a group effort is what makes a company work effectively.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-06-06T12:56:00.000Z',
+        category: 'Communication, Perseverance'
+    },
+    {
+        id: '20',
+        title: "Stay Creative",
+        content: "Creativity is the power to connect the seemingly unconnected.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-06-06T12:56:00.000Z',
+        category: 'Perseverance'
+    },
+    {
+        id: '21',
+        title: "A good aim.",
+        content: "The aim of the wise is not to secure pleasure, but to avoid pain.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-06-06T12:56:00.000Z',
+        category: 'inspiration'
+    },
+    {
+        id: '22',
+        title: "Teamwork wins championships",
+        content: "Talent wins game, but teamwork and intelligence wins championships.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-06-06T12:56:00.000Z',
+        category: 'Reality'
+    },
+    {
+        id: '23',
+        title: "Create the future",
+        content: "The best way to predict the future is to create it.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-06-06T12:56:00.000Z',
+        category: 'Motivational'
+    },
+    {
+        id: '24',
+        title: "Commitment opens the path",
+        content: "Commitment unlocks the door of imagination and vision.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-06-06T12:56:00.000Z',
+        category: 'Motivational'
+    },
+    {
+        id: '25',
+        title: "Remove unwanted doubts",
+        content: "The only limit to our realization of tomorrow is our doubts of today.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-06-06T12:56:00.000Z',
+        category: 'Motivational'
+    },
+    {
+        id: '26',
+        title: "Identity covers oneself",
+        content: "Identity is like a garment with which one covers oneself.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-06-06T12:56:00.000Z',
+        category: 'Reality'
+    },
 ];
 
 // Make the defaultThoughts available globally
