@@ -35,6 +35,9 @@ const thoughtsData = {
     nextId: 1
 };
 
+// Track initial load state
+let isInitialLoad = true;
+
 // Function to update nextId based on loaded thoughts
 function updateNextId() {
     if (window.defaultThoughts && window.defaultThoughts.length > 0) {
@@ -52,10 +55,19 @@ function updateNextId() {
 
 // Initialize search and sort functionality
 function initializeSearchAndSort() {
-    // Search input
+    // Search input with debounce for better performance
     const searchInput = document.getElementById('search-thoughts');
     if (searchInput) {
-        searchInput.addEventListener('input', () => loadThoughts());
+        let searchTimeout;
+        searchInput.addEventListener('input', () => {
+            // Clear previous timeout to avoid multiple rapid renders
+            clearTimeout(searchTimeout);
+            
+            // Use a small timeout to prevent excessive re-renders during typing
+            searchTimeout = setTimeout(() => {
+                renderThoughts();
+            }, 50); // Small delay for better performance during typing
+        });
     }
 
     // Initialize dropdown functionality
@@ -140,13 +152,16 @@ function initializeSearchAndSort() {
 // Filter thoughts based on search
 function filterThoughts(thoughts) {
     const searchInput = document.getElementById('search-thoughts');
-    const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
     if (!searchTerm) return thoughts;
     
     return thoughts.filter(thought => {
-        return (thought.title && thought.title.toLowerCase().includes(searchTerm)) || 
-               (thought.content && thought.content.toLowerCase().includes(searchTerm));
+        const searchInTitle = thought.title ? thought.title.toLowerCase().includes(searchTerm) : false;
+        const searchInContent = thought.content ? thought.content.toLowerCase().includes(searchTerm) : false;
+        const searchInCategory = thought.category ? thought.category.toLowerCase().includes(searchTerm) : false;
+        
+        return searchInTitle || searchInContent || searchInCategory;
     });
 }
 
@@ -237,6 +252,7 @@ function loadThoughts() {
         
         // Only use thoughts from shared-thoughts.js
         thoughtsData.thoughts = [...window.defaultThoughts];
+        cachedThoughts = [...window.defaultThoughts]; // Cache the thoughts
         
         console.log(`Loaded ${thoughtsData.thoughts.length} thoughts from shared-thoughts.js`);
         
@@ -244,15 +260,25 @@ function loadThoughts() {
         updateNextId();
         
         // Render the thoughts
-        renderThoughts();
+        renderThoughts(isInitialLoad);
+        isInitialLoad = false;
         
     } catch (error) {
         console.error('Error loading thoughts:', error);
         
         // Fallback to empty array if there's an error
         thoughtsData.thoughts = [];
+        cachedThoughts = [];
         updateNextId();
-        renderThoughts();
+        
+        const container = document.getElementById('thoughts-container');
+        if (container) {
+            container.innerHTML = `
+                <div class="error">
+                    <p>Error loading thoughts. Please refresh the page.</p>
+                    <button onclick="loadThoughts()" class="refresh-btn">Retry</button>
+                </div>`;
+        }
     }
 }
 
@@ -280,6 +306,7 @@ function createThoughtCard(thought) {
         <h2>${thought.title}</h2>
         <p>${thought.content}</p>
         <div class="thought-meta">
+            <span class="thought-category">${thought.category || 'Uncategorized'}</span>
             <span class="added-by">Added by: ${thought.addedBy}</span>
             <span class="timestamp">${formattedDate}</span>
         </div>
@@ -288,7 +315,7 @@ function createThoughtCard(thought) {
 }
 
 // Function to render thoughts
-function renderThoughts() {
+function renderThoughts(showLoading = true) {
     console.log('Rendering thoughts...');
     const container = document.getElementById('thoughts-container');
     if (!container) {
@@ -297,14 +324,29 @@ function renderThoughts() {
     }
     
     try {
-        // Show loading state
+        // Only show loading for initial load, not for searches
+        if (showLoading) {
+            container.innerHTML = `
+                <div class="container-loading">
+                    <div class="spinner"></div>
+                    <div class="loading-text">Loading thoughts...</div>
+                </div>`;
+            // Let the spinner render for a short moment
+            setTimeout(renderThoughtsInternal, 100);
+        } else {
+            renderThoughtsInternal();
+        }
+    } catch (error) {
+        console.error('Error rendering thoughts:', error);
         container.innerHTML = `
-            <div class="container-loading">
-                <div class="spinner"></div>
-                <div class="loading-text">Loading thoughts...</div>
+            <div class="error">
+                <p>Error loading thoughts. Please try again later.</p>
+                <button onclick="loadThoughts()" class="refresh-btn">Retry</button>
             </div>`;
-        // Let the spinner render for a short moment
-        setTimeout(() => {
+    }
+    
+    function renderThoughtsInternal() {
+        try {
             // Get and sort thoughts
             let thoughts = [...thoughtsData.thoughts];
             thoughts = filterThoughts(thoughts);
@@ -316,40 +358,36 @@ function renderThoughts() {
             if (thoughts.length === 0) {
                 container.innerHTML = `
                     <div class="no-thoughts">
-                        <p>No thoughts found.</p>
-                        <button onclick="loadThoughts()" class="refresh-btn">Try Again</button>
+                        <p>No thoughts found. Be the first to share your thought!</p>
                     </div>`;
                 return;
             }
 
-            // Create and append thought cards (all invisible)
-            const thoughtCards = thoughts.map(thought => createThoughtCard(thought));
-            thoughtCards.forEach(card => {
-                card.classList.remove('visible'); // Ensure invisible
-                card.classList.add('animated'); // Add animation class
-                container.appendChild(card);
+            // Add thoughts to the container
+            thoughts.forEach(thought => {
+                container.appendChild(createThoughtCard(thought));
             });
-
-            // Remove loading spinner now
-            // (already gone since we cleared container, but if using overlay, hide it here)
 
             // Fade in cards sequentially
             const cards = container.querySelectorAll('.thought-card');
             cards.forEach((card, index) => {
+                card.classList.remove('visible'); // Ensure invisible
+                card.classList.add('animated'); // Add animation class
+                
                 setTimeout(() => {
                     card.classList.add('visible');
-                }, index * 80);
+                }, index * 50);
             });
-
+            
             console.log(`Successfully rendered ${thoughts.length} thoughts`);
-        }, 200);
-    } catch (error) {
-        console.error('Error in renderThoughts:', error);
-        container.innerHTML = `
-            <div class="error">
-                <p>Error loading thoughts. Please try again.</p>
-                <button onclick="loadThoughts()" class="refresh-btn">Try Again</button>
-            </div>`;
+        } catch (error) {
+            console.error('Error in renderThoughtsInternal:', error);
+            container.innerHTML = `
+                <div class="error">
+                    <p>Error displaying thoughts. Please refresh the page.</p>
+                    <button onclick="loadThoughts()" class="refresh-btn">Retry</button>
+                </div>`;
+        }
     }
 }
 
