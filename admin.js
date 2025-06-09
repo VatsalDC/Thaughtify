@@ -98,16 +98,15 @@ function initializeAdmin() {
     loadAllData();
 }
 
-// Load all data
-async function loadAllData() {
-    try {
-        await Promise.all([
-            loadThoughts(),
-            loadCategories(),
-            updateStatistics()
-        ]);
-    } catch (error) {
-        console.error('Error in loadAllData:', error);
+// Show loading state in the thoughts container
+function showLoadingState() {
+    const container = document.getElementById('thoughts-container');
+    if (container) {
+        container.innerHTML = `
+            <div class="container-loading">
+                <div class="spinner"></div>
+                <div class="loading-text">Loading thoughts...</div>
+            </div>`;
     }
 }
 
@@ -128,35 +127,55 @@ function initializeAdmin() {
 
 // Load all data
 async function loadAllData() {
+    // Show loading state before starting to load
+    showLoadingState();
+    
     try {
+        // Load thoughts first, then other data
+        await loadThoughts();
         await Promise.all([
-            loadThoughts(),
+            loadCategories(),
             updateStatistics()
         ]);
     } catch (error) {
-        console.error('Error loading data:', error);
+        console.error('Error in loadAllData:', error);
+        // If there's an error, display an error message
+        const container = document.getElementById('thoughts-container');
+        if (container) {
+            container.innerHTML = `
+                <div class="error">
+                    <p>Error loading data. Please refresh the page.</p>
+                    <button onclick="loadAllData()" class="refresh-btn">Try Again</button>
+                </div>`;
+        }
     }
 }
 
 // Load and display thoughts from shared-thoughts.js
 function loadThoughts() {
-    try {
-        // Always use the shared thoughts
-        const thoughtsList = window.defaultThoughts ? [...window.defaultThoughts] : [];
-        
-        console.log('Loaded thoughts from shared-thoughts.js:', thoughtsList.length);
-        
-        // Filter and sort thoughts
-        const filteredThoughts = filterThoughts(thoughtsList);
-        const sortedThoughts = sortThoughtsList(filteredThoughts);
-        
-        // Display thoughts
-        displayThoughts(sortedThoughts);
-    } catch (error) {
-        console.error('Error loading thoughts:', error);
-        // Fallback to empty array if there's an error
-        displayThoughts([]);
-    }
+    return new Promise((resolve) => {
+        try {
+            // Always use the shared thoughts
+            const thoughtsList = window.defaultThoughts ? [...window.defaultThoughts] : [];
+            
+            console.log('Loaded thoughts from shared-thoughts.js:', thoughtsList.length);
+            
+            // Filter and sort thoughts
+            const filteredThoughts = filterThoughts(thoughtsList);
+            const sortedThoughts = sortThoughtsList(filteredThoughts);
+            
+            // Display thoughts
+            displayThoughts(sortedThoughts);
+            
+            // Resolve with the sorted thoughts
+            resolve(sortedThoughts);
+        } catch (error) {
+            console.error('Error loading thoughts:', error);
+            // Fallback to empty array if there's an error
+            displayThoughts([]);
+            resolve([]);
+        }
+    });
 }
 
 // Load categories from existing thoughts
@@ -231,23 +250,37 @@ function updateStatistics() {
     }
 }
 
-// Filter thoughts based on search
+// Filter thoughts based on search and category
 function filterThoughts(thoughts) {
     const searchInput = document.getElementById('search-thoughts');
-    const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
-
-    if (!searchTerm) return thoughts;
-    
+    const categorySelect = document.getElementById('category-filter');
+    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    const selectedCategory = categorySelect ? categorySelect.value : 'all';
     return thoughts.filter(thought => {
-        return (thought.title && thought.title.toLowerCase().includes(searchTerm)) || 
-               (thought.content && thought.content.toLowerCase().includes(searchTerm));
+        // Apply category filter
+        if (selectedCategory !== 'all') {
+            // Split categories by comma and trim whitespace, then check if any match the selected category
+            const categories = thought.category 
+                ? thought.category.split(',').map(cat => cat.trim())
+                : [];
+            if (!categories.includes(selectedCategory)) {
+                return false;
+            }
+        }
+        // Apply search term filter if present
+        if (searchTerm) {
+            const searchInTitle = thought.title ? thought.title.toLowerCase().includes(searchTerm) : false;
+            const searchInContent = thought.content ? thought.content.toLowerCase().includes(searchTerm) : false;
+            const searchInCategory = thought.category ? thought.category.toLowerCase().includes(searchTerm) : false;
+            return searchInTitle || searchInContent || searchInCategory;
+        }
+        return true;
     });
 }
 
 // Sort thoughts based on selected option
 function sortThoughtsList(thoughts) {
     const sortOption = document.getElementById('sort-thoughts').value;
-    
     return [...thoughts].sort((a, b) => {
         switch (sortOption) {
             case 'date-asc':
@@ -282,14 +315,7 @@ function displayThoughts(thoughts) {
         return;
     }
     
-    // Show loading spinner first
-    container.innerHTML = `
-        <div class="container-loading">
-            <div class="spinner"></div>
-            <div class="loading-text">Loading thoughts...</div>
-        </div>`;
-    setTimeout(() => {
-        try {
+    try {
             if (!thoughts || thoughts.length === 0) {
                 container.innerHTML = `
                     <div class="no-thoughts">
@@ -324,15 +350,14 @@ function displayThoughts(thoughts) {
                     card.classList.add('visible');
                 }, index * 80);
             });
-        } catch (error) {
-            console.error('Error rendering thoughts:', error);
-            container.innerHTML = `
-                <div class="error">
-                    <p>Error displaying thoughts. Please try again.</p>
-                    <button onclick="loadThoughts()" class="refresh-btn">Try Again</button>
-                </div>`;
-        }
-    }, 200);
+    } catch (error) {
+        console.error('Error rendering thoughts:', error);
+        container.innerHTML = `
+            <div class="error">
+                <p>Error displaying thoughts. Please try again.</p>
+                <button onclick="loadThoughts()" class="refresh-btn">Try Again</button>
+            </div>`;
+    }
 }
 
 // Format date for display as 'dd Month YYYY, HH:MM:SS'

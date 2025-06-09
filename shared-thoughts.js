@@ -22,7 +22,7 @@ const defaultThoughts = [
         content: "Your potential is endless. Keep pushing forward and never give up on your dreams.",
         addedBy: 'Thaughtify',
         timestamp: '2025-05-07T12:00:00.000Z',
-        category: 'Motivation'
+        category: 'Motivational'
     },
     {
         id: '4',
@@ -38,7 +38,7 @@ const defaultThoughts = [
         content: "Your attitude, not your aptitude, will determine your altitude.",
         addedBy: 'Thaughtify',
         timestamp: '2025-05-07T12:00:00.000Z',
-        category: 'Mindset'
+        category: 'Balance'
     },
     {
         id: '6',
@@ -46,7 +46,7 @@ const defaultThoughts = [
         content: "The only way to do great work is to love what you do. If you haven't found it yet, keep looking.",
         addedBy: 'Thaughtify',
         timestamp: '2025-05-07T12:00:00.000Z',
-        category: 'Change'
+        category: 'Inspiration'
     },
     {
         id: '7',
@@ -54,7 +54,7 @@ const defaultThoughts = [
         content: "The more you learn, the more you realize you don't know.",
         addedBy: 'Thaughtify',
         timestamp: '2025-05-07T12:00:00.000Z',
-        category: 'Learning'
+        category: 'Inspiration'
     },
     {
         id: '8',
@@ -130,7 +130,7 @@ const defaultThoughts = [
     },
     {
         id: '17',
-        title: "Commit More",
+        title: "Commit more",
         content: "Life is continuously testing us for our level of Commitment.",
         addedBy: 'Thaughtify',
         timestamp: '2025-06-05T17:52:00.000Z',
@@ -146,7 +146,7 @@ const defaultThoughts = [
     },
     {
         id: '19',
-        title: "Individual Commitment Helps in Growth",
+        title: "Individual Commitment helps in growth",
         content: "Individual commitment to a group effort is what makes a company work effectively.",
         addedBy: 'Thaughtify',
         timestamp: '2025-06-06T12:56:00.000Z',
@@ -162,7 +162,7 @@ const defaultThoughts = [
     },
     {
         id: '21',
-        title: "A Good Aim",
+        title: "A good aim.",
         content: "The aim of the wise is not to secure pleasure, but to avoid pain.",
         addedBy: 'Thaughtify',
         timestamp: '2025-06-06T12:56:00.000Z',
@@ -170,7 +170,7 @@ const defaultThoughts = [
     },
     {
         id: '22',
-        title: "Teamwork Wins Championships",
+        title: "Teamwork wins championships",
         content: "Talent wins game, but teamwork and intelligence wins championships.",
         addedBy: 'Thaughtify',
         timestamp: '2025-06-06T12:56:00.000Z',
@@ -178,7 +178,7 @@ const defaultThoughts = [
     },
     {
         id: '23',
-        title: "Create the Future",
+        title: "Create the future",
         content: "The best way to predict the future is to create it.",
         addedBy: 'Thaughtify',
         timestamp: '2025-06-06T12:56:00.000Z',
@@ -186,7 +186,7 @@ const defaultThoughts = [
     },
     {
         id: '24',
-        title: "Commitment Opens the Path",
+        title: "Commitment opens the path",
         content: "Commitment unlocks the door of imagination and vision.",
         addedBy: 'Thaughtify',
         timestamp: '2025-06-06T12:56:00.000Z',
@@ -194,7 +194,7 @@ const defaultThoughts = [
     },
     {
         id: '25',
-        title: "Remove Unwanted Doubts",
+        title: "Remove unwanted doubts",
         content: "The only limit to our realization of tomorrow is our doubts of today.",
         addedBy: 'Thaughtify',
         timestamp: '2025-06-06T12:56:00.000Z',
@@ -202,7 +202,7 @@ const defaultThoughts = [
     },
     {
         id: '26',
-        title: "Identity Covers Oneself",
+        title: "Identity covers oneself",
         content: "Identity is like a garment with which one covers oneself.",
         addedBy: 'Thaughtify',
         timestamp: '2025-06-06T12:56:00.000Z',
@@ -238,7 +238,7 @@ const defaultThoughts = [
         content: "A leader needs enough understanding to fashion an intelligent strategy.",
         addedBy: 'Thaughtify',
         timestamp: '2025-06-10T19:46:00.000Z',
-        category: 'Decision Making'
+        category: 'Decision-Making'
     },
     {
         id: '31',
@@ -254,7 +254,7 @@ const defaultThoughts = [
         content: "Unless commitment is made, there are only promises and hopes; but no plans.",
         addedBy: 'Thaughtify',
         timestamp: '2025-06-10T19:48:00.000Z',
-        category: 'Decision Making, Motivational'
+        category: 'Decision-Making, Motivational'
     },
     {
         id: '33',
@@ -320,6 +320,7 @@ const defaultThoughts = [
         timestamp: '2025-06-10T20:20:00.000Z',
         category: 'Inspiration, Perseverance'
     },
+    
 ];
 
 // Make the defaultThoughts available globally

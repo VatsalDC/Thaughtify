@@ -67,30 +67,44 @@ function initializeSearchAndSort() {
         });
     }
 
-    // Initialize dropdown functionality
+    // Initialize sort dropdown
     const sortSelect = document.getElementById('sort-thoughts');
-    const customSelect = document.querySelector('.custom-select');
-    const selectedOption = document.querySelector('.selected-option');
-    const options = document.querySelectorAll('.option');
+    const sortCustomSelect = sortSelect ? sortSelect.closest('.custom-select') : null;
+    const sortSelectedOption = sortCustomSelect ? sortCustomSelect.querySelector('.selected-option') : null;
     
-    // Set initial selected value
-    if (sortSelect && selectedOption) {
-        const initialOption = sortSelect.querySelector('option:checked');
-        if (initialOption) {
-            selectedOption.textContent = initialOption.textContent;
+    // Initialize category dropdown
+    const categorySelect = document.getElementById('category-filter');
+    const categoryCustomSelect = categorySelect ? categorySelect.closest('.custom-select') : null;
+    const categorySelectedOption = categoryCustomSelect ? categoryCustomSelect.querySelector('.selected-option') : null;
+    
+    // Set initial selected values
+    if (sortSelect && sortSelectedOption) {
+        const initialSortOption = sortSelect.querySelector('option:checked');
+        if (initialSortOption) {
+            sortSelectedOption.textContent = initialSortOption.textContent;
         }
     }
     
-    // Toggle dropdown on click
-    if (selectedOption) {
+    if (categorySelect && categorySelectedOption) {
+        const initialCategoryOption = categorySelect.querySelector('option:checked');
+        if (initialCategoryOption) {
+            categorySelectedOption.textContent = initialCategoryOption.textContent;
+        }
+    }
+    
+    // Function to handle dropdown toggle
+    function setupDropdown(select, customSelect, selectedOption) {
+        if (!select || !customSelect || !selectedOption) return;
+        
+        // Toggle dropdown on click
         selectedOption.addEventListener('click', function(e) {
             e.stopPropagation();
             const isOpen = customSelect.classList.toggle('open');
             
             // Close other open dropdowns
-            document.querySelectorAll('.custom-select').forEach(select => {
-                if (select !== customSelect) {
-                    select.classList.remove('open');
+            document.querySelectorAll('.custom-select').forEach(selectEl => {
+                if (selectEl !== customSelect) {
+                    selectEl.classList.remove('open');
                 }
             });
             
@@ -107,36 +121,54 @@ function initializeSearchAndSort() {
         });
     }
     
-    // Handle option selection
-    options.forEach(option => {
-        option.addEventListener('click', function() {
-            const value = this.getAttribute('data-value');
-            if (sortSelect) {
-                sortSelect.value = value;
-                const event = new Event('change', { bubbles: true });
-                sortSelect.dispatchEvent(event);
-            }
-            if (selectedOption) {
-                selectedOption.textContent = this.textContent;
-            }
-            if (customSelect) {
-                customSelect.classList.remove('open');
-            }
-        });
+    // Setup both dropdowns
+    setupDropdown(sortSelect, sortCustomSelect, sortSelectedOption);
+    setupDropdown(categorySelect, categoryCustomSelect, categorySelectedOption);
+    
+    // Handle option selection for both dropdowns
+    document.addEventListener('click', function(e) {
+        const option = e.target.closest('.option');
+        if (!option) return;
+        
+        const customSelect = option.closest('.custom-select');
+        if (!customSelect) return;
+        
+        const select = customSelect.querySelector('select');
+        const selectedOption = customSelect.querySelector('.selected-option');
+        
+        if (select && selectedOption) {
+            const value = option.getAttribute('data-value');
+            select.value = value;
+            selectedOption.textContent = option.textContent;
+            
+            // Trigger change event
+            const event = new Event('change', { bubbles: true });
+            select.dispatchEvent(event);
+            
+            // Close the dropdown
+            customSelect.classList.remove('open');
+        }
     });
     
-    // Handle keyboard navigation and sort change
+    // Handle sort change
     if (sortSelect) {
         sortSelect.style.display = 'block';
-        
         sortSelect.addEventListener('change', function() {
-            const sortValue = this.value;
-            console.log('Sorting by:', sortValue);
-            loadThoughts();
+            console.log('Sorting by:', this.value);
+            renderThoughts();
         });
     }
     
-    // Close dropdown when pressing Escape
+    // Handle category change
+    if (categorySelect) {
+        categorySelect.style.display = 'block';
+        categorySelect.addEventListener('change', function() {
+            console.log('Category selected:', this.value);
+            renderThoughts();
+        });
+    }
+    
+    // Close dropdowns when pressing Escape
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             document.querySelectorAll('.custom-select').forEach(select => {
@@ -146,19 +178,37 @@ function initializeSearchAndSort() {
     });
 }
 
-// Filter thoughts based on search
+// Filter thoughts based on search and category
 function filterThoughts(thoughts) {
     const searchInput = document.getElementById('search-thoughts');
+    const categorySelect = document.getElementById('category-filter');
+    
     const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
-
-    if (!searchTerm) return thoughts;
+    const selectedCategory = categorySelect ? categorySelect.value : 'all';
     
     return thoughts.filter(thought => {
-        const searchInTitle = thought.title ? thought.title.toLowerCase().includes(searchTerm) : false;
-        const searchInContent = thought.content ? thought.content.toLowerCase().includes(searchTerm) : false;
-        const searchInCategory = thought.category ? thought.category.toLowerCase().includes(searchTerm) : false;
+        // Apply category filter
+        if (selectedCategory !== 'all') {
+            // Split categories by comma and trim whitespace, then check if any match the selected category
+            const categories = thought.category 
+                ? thought.category.split(',').map(cat => cat.trim())
+                : [];
+                
+            if (!categories.includes(selectedCategory)) {
+                return false;
+            }
+        }
         
-        return searchInTitle || searchInContent || searchInCategory;
+        // Apply search term filter if present
+        if (searchTerm) {
+            const searchInTitle = thought.title ? thought.title.toLowerCase().includes(searchTerm) : false;
+            const searchInContent = thought.content ? thought.content.toLowerCase().includes(searchTerm) : false;
+            const searchInCategory = thought.category ? thought.category.toLowerCase().includes(searchTerm) : false;
+            
+            return searchInTitle || searchInContent || searchInCategory;
+        }
+        
+        return true;
     });
 }
 
@@ -236,46 +286,64 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.add-thought-btn').forEach(btn => btn.remove());
 });
 
+// Show loading state in the thoughts container
+function showLoadingState() {
+    const container = document.getElementById('thoughts-container');
+    if (container) {
+        container.innerHTML = `
+            <div class="container-loading">
+                <div class="spinner"></div>
+                <div class="loading-text">Loading thoughts...</div>
+            </div>`;
+    }
+}
+
 // Load thoughts from shared-thoughts.js
 function loadThoughts() {
     console.log('Loading thoughts from shared-thoughts.js...');
     
-    try {
-        // Ensure defaultThoughts is an array
-        if (!Array.isArray(window.defaultThoughts)) {
-            console.error('defaultThoughts is not an array:', window.defaultThoughts);
-            window.defaultThoughts = [];
+    // Show loading state
+    showLoadingState();
+    
+    // Use a small timeout to ensure the loading state is visible
+    setTimeout(() => {
+        try {
+            // Ensure defaultThoughts is an array
+            if (!Array.isArray(window.defaultThoughts)) {
+                console.error('defaultThoughts is not an array:', window.defaultThoughts);
+                window.defaultThoughts = [];
+            }
+            
+            // Only use thoughts from shared-thoughts.js
+            thoughtsData.thoughts = [...window.defaultThoughts];
+            cachedThoughts = [...window.defaultThoughts]; // Cache the thoughts
+            
+            console.log(`Loaded ${thoughtsData.thoughts.length} thoughts from shared-thoughts.js`);
+            
+            // Update the next available ID (for reference only, since adding is disabled)
+            updateNextId();
+            
+            // Render the thoughts
+            renderThoughts();
+            
+        } catch (error) {
+            console.error('Error loading thoughts:', error);
+            
+            // Fallback to empty array if there's an error
+            thoughtsData.thoughts = [];
+            cachedThoughts = [];
+            updateNextId();
+            
+            const container = document.getElementById('thoughts-container');
+            if (container) {
+                container.innerHTML = `
+                    <div class="error">
+                        <p>Error loading thoughts. Please refresh the page.</p>
+                        <button onclick="loadThoughts()" class="refresh-btn">Retry</button>
+                    </div>`;
+            }
         }
-        
-        // Only use thoughts from shared-thoughts.js
-        thoughtsData.thoughts = [...window.defaultThoughts];
-        cachedThoughts = [...window.defaultThoughts]; // Cache the thoughts
-        
-        console.log(`Loaded ${thoughtsData.thoughts.length} thoughts from shared-thoughts.js`);
-        
-        // Update the next available ID (for reference only, since adding is disabled)
-        updateNextId();
-        
-        // Render the thoughts
-        renderThoughts();
-        
-    } catch (error) {
-        console.error('Error loading thoughts:', error);
-        
-        // Fallback to empty array if there's an error
-        thoughtsData.thoughts = [];
-        cachedThoughts = [];
-        updateNextId();
-        
-        const container = document.getElementById('thoughts-container');
-        if (container) {
-            container.innerHTML = `
-                <div class="error">
-                    <p>Error loading thoughts. Please refresh the page.</p>
-                    <button onclick="loadThoughts()" class="refresh-btn">Retry</button>
-                </div>`;
-        }
-    }
+    }, 50); // Small delay to ensure the loading state is visible
 }
 
 // Save thoughts function (disabled in read-only mode)
