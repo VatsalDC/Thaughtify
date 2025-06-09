@@ -9,18 +9,42 @@
     <link rel="stylesheet" href="styles.css">
     <!-- Load scripts in correct order -->
     <script>
+        // Show loading state immediately
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('thoughts-container');
+            if (container) {
+                container.innerHTML = `
+                    <div class="container-loading">
+                        <div class="spinner"></div>
+                        <div class="loading-text">Loading thoughts...</div>
+                    </div>`;
+            }
+        });
+
+        // Load scripts in order
         function loadScripts() {
             const scripts = [
                 'shared-thoughts.js',
-                'admin.js',
-                'js/navigation.js'
+                'js/navigation.js',
+                'admin.js'
             ];
             
             function loadScript(index) {
                 if (index >= scripts.length) {
-                    // All scripts loaded, initialize the admin
-                    if (typeof initializeAdmin === 'function') {
+                    // All scripts loaded, initialize admin
+                    if (window.initializeAdmin) {
                         initializeAdmin();
+                    } else {
+                        console.error('initializeAdmin function not found');
+                        // Show error if initializeAdmin is not found
+                        const container = document.getElementById('thoughts-container');
+                        if (container) {
+                            container.innerHTML = `
+                                <div class="error">
+                                    <p>Error initializing application. Please refresh the page.</p>
+                                    <button onclick="window.location.reload()" class="refresh-btn">Refresh</button>
+                                </div>`;
+                        }
                     }
                     return;
                 }
@@ -30,11 +54,20 @@
                 script.onload = () => loadScript(index + 1);
                 script.onerror = () => {
                     console.error('Failed to load script:', scripts[index]);
-                    loadScript(index + 1);
+                    // Show error if script fails to load
+                    const container = document.getElementById('thoughts-container');
+                    if (container) {
+                        container.innerHTML = `
+                            <div class="error">
+                                <p>Failed to load required resources. Please check your connection and refresh the page.</p>
+                                <button onclick="window.location.reload()" class="refresh-btn">Refresh</button>
+                            </div>`;
+                    }
                 };
                 document.head.appendChild(script);
             }
             
+            // Start loading scripts
             loadScript(0);
         }
         
@@ -55,7 +88,7 @@
         <div class="nav-overlay"></div>
         <ul class="nav-menu" id="nav-menu" role="menu">
             <li><a href="index.html" class="nav-link" role="menuitem">View Site</a></li>
-            <li><a href="#" class="nav-link" role="menuitem" id="logout-link">Logout</a></li>
+            <!-- <li><a href="#" class="nav-link" role="menuitem" id="logout-link">Logout</a></li> -->
         </ul>
     </nav>
 
@@ -75,9 +108,34 @@
                 <!-- Thought management buttons removed -->
             </div>
 
-            <!-- Search -->
+            <!-- Search and Filter -->
             <div class="filter-container">
                 <input type="text" id="search-thoughts" placeholder="Search thoughts...">
+                <div class="custom-select">
+                    <div class="selected-option">All Categories</div>
+                    <div class="options-container">
+                        <div class="option" data-value="all">All Categories</div>
+                        <div class="option" data-value="Business">Business</div>
+                        <div class="option" data-value="Inspiration">Inspiration</div>
+                        <div class="option" data-value="Perseverance">Perseverance</div>
+                        <div class="option" data-value="Communication">Communication</div>
+                        <div class="option" data-value="Time Management">Time Management</div>
+                        <div class="option" data-value="Balance">Balance</div>
+                        <div class="option" data-value="Motivational">Motivational</div>
+                        <div class="option" data-value="Decision-Making">Decision-Making</div>
+                    </div>
+                    <select id="category-filter" style="display: none;">
+                        <option value="all" selected>All Categories</option>
+                        <option value="Business">Business</option>
+                        <option value="Inspiration">Inspiration</option>
+                        <option value="Perseverance">Perseverance</option>
+                        <option value="Communication">Communication</option>
+                        <option value="Time Management">Time Management</option>
+                        <option value="Balance">Balance</option>
+                        <option value="Motivational">Motivational</option>
+                        <option value="Decision-Making">Decision-Making</option>
+                    </select>
+                </div>
                 <div class="custom-select">
                     <div class="selected-option">Newest First</div>
                     <div class="options-container">
@@ -154,6 +212,35 @@
 
     <style>
         /* Admin specific styles */
+        .container-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            min-height: 200px;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4a90e2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        
+        .loading-text {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
         .admin-note {
             background-color: #f8f9fa;
             border-left: 4px solid #4a90e2;
