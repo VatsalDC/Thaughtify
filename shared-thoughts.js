@@ -208,6 +208,118 @@ const defaultThoughts = [
         timestamp: '2025-06-06T12:56:00.000Z',
         category: 'Reality'
     },
+    {
+        id: '27',
+        title: "Unlock More Options",
+        content: "There is always a better strategy than the one you have.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-06-10T19:43:00.000Z',
+        category: 'Motivational'
+    },
+    {
+        id: '28',
+        title: "Think Differently",
+        content: "To think creatively, we must be able to look differently.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-06-10T19:44:00.000Z',
+        category: 'Perseverance'
+    },
+    {
+        id: '29',
+        title: "Success Demands Patience",
+        content: "To know how to wait is the great secret of success.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-06-10T19:44:00.000Z',
+        category: 'Reality'
+    },
+    {
+        id: '30',
+        title: "The Informed Leader",
+        content: "A leader needs enough understanding to fashion an intelligent strategy.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-06-10T19:46:00.000Z',
+        category: 'Decision Making'
+    },
+    {
+        id: '31',
+        title: "Hope, Caution, and Agility",
+        content: "Expect the best, Plan for the worst & Prepare to be surprised.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-06-10T19:48:00.000Z',
+        category: 'Motivational'
+    },
+    {
+        id: '32',
+        title: "Commitment Makes It Real",
+        content: "Unless commitment is made, there are only promises and hopes; but no plans.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-06-10T19:48:00.000Z',
+        category: 'Decision Making, Motivational'
+    },
+    {
+        id: '33',
+        title: "Persistence Builds Power",
+        content: "Strength and growth come only through continuous efforts.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-06-10T19:49:00.000Z',
+        category: 'Perseverance, Inspiration'
+    },
+    {
+        id: '34',
+        title: "Plans Die Without Sweat",
+        content: "Plans are only good intentions unless they immediately degenerate into hard work.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-06-10T19:50:00.000Z',
+        category: 'Motivational'
+    },
+    {
+        id: '35',
+        title: "Now > Later",
+        content: "A good plan violently executed NOW is better than a Perfect plan NEXT WEEK.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-06-10T19:50:00.000Z',
+        category: 'Decision-Making'
+    },
+    {
+        id: '36',
+        title: "Don’t Rush Becoming You",
+        content: "Identity is such a crucial affair that one shouldn't rush into it.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-06-10T19:52:00.000Z',
+        category: 'Reality, Perseverance'
+    },
+    {
+        id: '37',
+        title: "Together Toward Tomorrow",
+        content: "Teamwork is the ability to work togather towards a common vision.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-06-10T19:53:00.000Z',
+        category: 'Communication, Motivational'
+    },
+    {
+        id: '38',
+        title: "Resilience Through Defeat",
+        content: "The greatest test of courage on Earth is to bear defeat Without losing heart.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-06-10T20:18:00.000Z',
+        category: 'Perseverance'
+    },
+    {
+        id: '39',
+        title: "Endless Commitment, Greatest Rewards",
+        content: "Life's greatest rewards are reserved for those who demonstrate a never ending commitment.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-06-10T20:18:00.000Z',
+        category: 'Inspiration'
+    },
+    {
+        id: '40',
+        title: "Unstoppable Courage",
+        content: "Courage is going from Failure to Failure without losing Enthisiasm.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-06-10T20:20:00.000Z',
+        category: 'Inspiration, Perseverance'
+    },
 ];
 
 // Make the defaultThoughts available globally
