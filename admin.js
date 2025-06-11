@@ -3,6 +3,66 @@ if (!window.defaultThoughts || !Array.isArray(window.defaultThoughts)) {
     window.defaultThoughts = [];
 }
 
+// Script loading functionality
+function loadAdminScripts() {
+    // Show loading state immediately
+    const container = document.getElementById('thoughts-container');
+    if (container) {
+        container.innerHTML = `
+            <div class="container-loading">
+                <div class="spinner"></div>
+                <div class="loading-text">Loading thoughts...</div>
+            </div>`;
+    }
+
+    // Scripts to load in order
+    const scripts = [
+        'shared-thoughts.js',
+        'js/navigation.js',
+        'admin.js'
+    ];
+    
+    function loadScript(index) {
+        if (index >= scripts.length) {
+            // All scripts loaded, initialize admin
+            if (window.initializeAdmin) {
+                initializeAdmin();
+            } else {
+                console.error('initializeAdmin function not found');
+                // Show error if initializeAdmin is not found
+                const container = document.getElementById('thoughts-container');
+                if (container) {
+                    container.innerHTML = `
+                        <div class="error">
+                            <p>Error initializing application. Please refresh the page.</p>
+                            <button onclick="window.location.reload()" class="refresh-btn">Refresh</button>
+                        </div>`;
+                }
+            }
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.src = scripts[index];
+        script.onload = () => loadScript(index + 1);
+        script.onerror = () => {
+            console.error(`Failed to load script: ${scripts[index]}`);
+            loadScript(index + 1); // Continue with next script even if one fails
+        };
+        document.head.appendChild(script);
+    }
+
+    // Start loading scripts
+    loadScript(0);
+}
+
+// Start loading scripts when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadAdminScripts);
+} else {
+    loadAdminScripts();
+}
+
 // Setup event listeners
 function setupEventListeners() {
     // Search input
@@ -28,20 +88,25 @@ function setupEventListeners() {
         }
         
         // Toggle dropdown
-        selectedOption.addEventListener('click', function(e) {
+        selectedOption.addEventListener('click', (e) => {
             e.stopPropagation();
-            const isOpen = select.classList.toggle('open');
+            const isOpen = select.classList.contains('open');
             
-            // Close other open dropdowns
-            document.querySelectorAll('.custom-select').forEach(otherSelect => {
-                if (otherSelect !== select) {
-                    otherSelect.classList.remove('open');
-                }
+            // Close all other open dropdowns
+            document.querySelectorAll('.custom-select').forEach(s => {
+                if (s !== select) s.classList.remove('open');
             });
             
-            // Prevent default only if we're opening the dropdown
-            if (isOpen) {
-                e.preventDefault();
+            // Toggle this dropdown
+            const wasOpen = select.classList.contains('open');
+            select.classList.toggle('open', !wasOpen);
+            
+            // Set --index property for each option when opening
+            if (!wasOpen) {
+                const options = select.querySelectorAll('.option');
+                options.forEach((option, index) => {
+                    option.style.setProperty('--index', index);
+                });
             }
         });
         
@@ -316,25 +381,42 @@ function displayThoughts(thoughts) {
     }
     
     try {
+            // Set a fixed height for the container before updating content
+            const containerHeight = container.offsetHeight;
+            container.style.minHeight = containerHeight ? `${containerHeight}px` : '200px';
+            
+            // Show loading state
+            container.innerHTML = `
+                <div class="container-loading">
+                    <div class="spinner"></div>
+                    <div class="loading-text">Loading thoughts...</div>
+                </div>`;
+                
             if (!thoughts || thoughts.length === 0) {
                 container.innerHTML = `
                     <div class="no-thoughts">
                         <p>No thoughts found</p>
                         <button onclick="loadThoughts()" class="refresh-btn">Refresh</button>
                     </div>`;
+                container.style.minHeight = ''; // Reset min-height
                 return;
             }
+            
             // Create and append thought cards (all invisible)
             container.innerHTML = '';
             thoughts.forEach(thought => {
                 const card = document.createElement('div');
                 card.className = 'thought-card';
+                const formattedDate = formatDate(thought.timestamp);
                 card.innerHTML = `
+                    <div class="thought-content">
                     <h2>${thought.title || 'Untitled'}</h2>
                     <p>${thought.content || ''}</p>
-                    <div class="thought-footer">
-                        <span class="thought-category">${thought.category || 'Uncategorized'}</span>
-                        <span class="thought-date">${formatDate(thought.timestamp)}</span>
+                </div>
+                <div class="thought-meta">
+                        <span class="meta-item thought-category">${thought.category || 'Uncategorized'}</span>
+                        <span class="meta-item added-by">Added by: ${thought.addedBy || 'Admin'}</span>
+                        <span class="meta-item timestamp">${formattedDate}</span>
                     </div>
                 `;
                 // Ensure invisible and animated
@@ -343,11 +425,18 @@ function displayThoughts(thoughts) {
                 container.appendChild(card);
             });
             // Remove loading spinner now (container is cleared)
+            // Reset container height after content is loaded
+            container.style.minHeight = '';
+            
             // Fade in cards sequentially
             const cards = container.querySelectorAll('.thought-card');
             cards.forEach((card, index) => {
                 setTimeout(() => {
                     card.classList.add('visible');
+                    // After last card fades in, reset container height to auto
+                    if (index === cards.length - 1) {
+                        container.style.minHeight = '';
+                    }
                 }, index * 80);
             });
     } catch (error) {
@@ -360,21 +449,112 @@ function displayThoughts(thoughts) {
     }
 }
 
-// Format date for display as 'dd Month YYYY, HH:MM:SS'
-function formatDate(dateString) {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    const day = date.getDate().toString().padStart(2, '0');
-    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    const month = monthNames[date.getMonth()];
-    const year = date.getFullYear();
-    const time = date.toTimeString().split(' ')[0]; // Gets HH:MM:SS
-    return `${day} ${month} ${year}, ${time}`;
+// Format date and time from timestamp (DD Month YYYY, HH:MM:SS AM/PM)
+// Converts IST to user's local timezone
+function formatDate(timestamp) {
+    if (!timestamp) return '';
+    
+    try {
+        // Create date object (assumes the timestamp is in IST)
+        let date = new Date(timestamp);
+        
+        // If the timestamp is in ISO format without timezone, it's treated as UTC
+        // So we need to convert from UTC to IST first, then to local time
+        if (timestamp.endsWith('Z') || timestamp.includes('+') || timestamp.includes('T')) {
+            // If it's already in ISO format with Z, remove Z and add +05:30 for IST
+            const istTimestamp = timestamp.endsWith('Z') 
+                ? timestamp.slice(0, -1) + '+05:30' 
+                : timestamp;
+            date = new Date(istTimestamp);
+        }
+        
+        if (isNaN(date.getTime())) return '';
+        
+        // Convert to local time
+        const localDate = new Date(date);
+        
+        // Format date parts
+        const day = localDate.getDate().toString().padStart(2, '0');
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                          'July', 'August', 'September', 'October', 'November', 'December'];
+        const month = monthNames[localDate.getMonth()];
+        const year = localDate.getFullYear();
+        
+        // Format time parts in 12-hour format with AM/PM
+        let hours = localDate.getHours();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // Convert 0 to 12
+        
+        const minutes = localDate.getMinutes().toString().padStart(2, '0');
+        const seconds = localDate.getSeconds().toString().padStart(2, '0');
+        
+        // Get timezone abbreviation
+        let timeZoneAbbr = '';
+        try {
+            const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            timeZoneAbbr = new Intl.DateTimeFormat('en', { 
+                timeZone,
+                timeZoneName: 'short' 
+            }).formatToParts(new Date()).find(part => part.type === 'timeZoneName').value;
+        } catch (e) {
+            console.error('Error getting timezone abbreviation:', e);
+        }
+        
+        return `${day} ${month} ${year}, ${hours}:${minutes} ${ampm} (${timeZoneAbbr})`;
+    } catch (e) {
+        console.error('Error formatting date and time:', e);
+        return '';
+    }
 }
 
 // Delete functionality has been removed as thoughts are now managed through shared-thoughts.js
 
-// Initialize the admin dashboard when the DOM is fully loaded
+// Reset scroll position to top when page loads
+window.scrollTo(0, 0);
+
+// Ensure scroll is at the top when page loads
+window.addEventListener('load', function() {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+});
+
+// Load thoughts when the page loads
 document.addEventListener('DOMContentLoaded', () => {
+    // Ensure scroll is at the top when loading thoughts
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
     initializeAdmin();
 });
+
+// Mobile navigation toggle for admin
+document.addEventListener('DOMContentLoaded', function() {
+    const navToggle = document.querySelector('.nav-toggle');
+    const navMenu = document.querySelector('.nav-menu');
+    
+    if (navToggle && navMenu) {
+        navToggle.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+            this.classList.toggle('active');
+        });
+    }
+    
+    // Close mobile menu when clicking on a nav link
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+            if (navMenu) navMenu.classList.remove('active');
+            if (navToggle) navToggle.classList.remove('active');
+        });
+    });
+});
+
+// Clean up any existing service workers
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+            registration.unregister();
+        }
+    });
+}

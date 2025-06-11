@@ -38,14 +38,186 @@
     min-height: 220px;
 }
 
+/* Regular thought cards */
 .thought-card {
     opacity: 0;
     transition: opacity 0.5s cubic-bezier(0.4,0,0.2,1);
+    position: relative;
+    min-height: 180px;
+    padding: 15px 15px 70px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    height: 100%;
 }
+
+/* Admin-specific card styles */
+body.admin .thought-card {
+    min-height: 190px; /* 10px taller than regular cards */
+    padding-bottom: 80px; /* Slightly more padding at bottom */
+}
+
+/* Admin metadata in columns */
+body.admin .thought-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align items to the left */
+    gap: 6px;
+    padding: 12px 0 0 0;
+    margin: 0;
+    border-top: 1px solid #eee;
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    right: 15px;
+    background: white;
+    text-align: left; /* Ensure text aligns to the left */
+}
+
+body.admin .thought-meta .meta-item {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%; /* Ensure full width for proper text alignment */
+}
+
+/* Center the category text */
+body.admin .thought-meta .meta-item.thought-category {
+    text-align: center;
+    font-weight: 600;
+    color: #666; /* Grey color to match metadata */
+}
+
+/* Sort dropdown specific styles */
+#sort-thoughts + .custom-select {
+    margin-left: 10px;
+}
+
+/* Ensure sort dropdown has proper z-index when open */
+#sort-thoughts + .custom-select.open {
+    z-index: 10000;
+}
+
+/* Ensure sort dropdown options container has proper z-index */
+#sort-thoughts + .custom-select .options-container {
+    z-index: 9999;
+}
+
+.thought-content {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+}
+
 .thought-card.visible {
     opacity: 1;
 }
 
+.thought-card h2 {
+    font-size: 1.4rem;
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.thought-card p {
+    color: #666;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.thought-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: #888;
+    padding: 12px 0 0 0;
+    margin: 0;
+    border-top: 1px solid #eee;
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    right: 15px;
+    background: white;
+}
+
+.thought-category {
+    font-weight: 600;
+    color: #4a90e2;
+}
+
+.added-by {
+    color: #666;
+}
+
+.timestamp {
+    color: #999;
+}
+
+/* Reset scroll behavior */
+html {
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Reset any conflicting transitions */
+* {
+    scrollbar-width: thin;
+}
+
+/* Main content area */
+.main-content {
+    min-height: calc(100vh - 60px);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Container for thoughts */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+    width: 100%;
+    flex: 1;
+    position: relative; /* Add this for proper positioning context */
+}
+
+/* Thoughts container with fixed height */
+.thoughts-container {
+    position: relative;
+    min-height: 200px; /* Minimum height to prevent layout shift */
+    overflow: hidden; /* Prevent content from overflowing */
+}
+
+/* Loading container */
+.container-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.9);
+    z-index: 10;
+}
 
 /* Base Styles */
 * {
@@ -364,8 +536,18 @@ body {
 .custom-select.open .options-container {
     opacity: 1;
     pointer-events: auto;
-    max-height: 300px;
-    overflow-y: auto;
+    max-height: none !important; /* Remove fixed height */
+    overflow-y: visible !important; /* Remove scrollbar */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-top: none;
+    border-radius: 0 0 25px 25px;
+    z-index: 1000;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .option {
@@ -374,6 +556,9 @@ body {
     opacity: 0;
     transform: translateY(-10px);
     cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .custom-select.open .option {
@@ -634,13 +819,62 @@ body {
 /* Custom Dropdown */
 .custom-select {
     position: relative;
-    min-width: 180px;
-    flex: 1;
+    width: 200px;
     cursor: pointer;
     user-select: none;
-    z-index: 1;
+    z-index: 10; /* Default z-index when closed */
     /* Remove any margin-bottom or padding-bottom if present */
 } /* Ensure relative positioning for dropdown */
+
+/* When dropdown is open, give it highest z-index */
+.custom-select.open {
+    z-index: 10000;
+}
+
+/* Category filter specific styles */
+#category-filter + .custom-select .options-container {
+    max-height: 0;
+    overflow: hidden;
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-top: none;
+    border-radius: 0 0 25px 25px;
+    z-index: 9999; /* High z-index but less than the parent when open */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transform: translateY(-8px);
+    transform-origin: top;
+    transition: opacity 0.2s ease-out, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    will-change: transform, opacity, max-height;
+}
+
+#category-filter + .custom-select.open .options-container {
+    max-height: 500px; /* Adjust based on your content */
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    transition: opacity 0.2s ease-out, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#category-filter + .custom-select .option {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition-delay: calc(var(--index) * 0.05s);
+}
+
+#category-filter + .custom-select.open .option {
+    opacity: 1;
+    transform: translateY(0);
+}
 
 @media (max-width: 768px) {
     .filter-container {
@@ -779,8 +1013,8 @@ body.admin-page .thoughts-container {
     justify-content: space-between;
     font-size: 0.85rem;
     color: #777;
-    margin-top: 1rem;
-    padding-top: 0.75rem;
+    margin-top: 1.5rem; /* Increased from 1rem */
+    padding-top: 1rem; /* Increased from 0.75rem */
     border-top: 1px solid #eee;
 }
 
@@ -1937,10 +2171,665 @@ footer {
     }
 }
 
+#gitlink{
+    cursor: pointer;
+    color: #00303f;
+    text-decoration: none;
+}
+
+/* Original Desktop Card Styles */
+.thought-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.thought-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.thought-content h2 {
+    margin: 0 0 1rem 0;
+    color: #2c3e50;
+    font-size: 1.5rem;
+}
+
+.thought-content p {
+    margin: 0 0 1rem 0;
+    color: #333;
+    line-height: 1.6;
+}
+
+.thought-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.thought-category,
+.added-by,
+.timestamp {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.thought-category {
+    background: #f0f7ff;
+    color: #0066cc;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-weight: 500;
+}
+
+/* Mobile Card Styles */
+@media (max-width: 768px) {
+    /* Hide meta info in cards on mobile */
+    .thought-card .thought-meta {
+        display: none;
+    }
+    
+    /* Mobile Card base styles */
+    .thought-card {
+        cursor: pointer;
+        position: relative;
+        width: 100%;
+        margin-bottom: 1rem;
+        padding: 1.25rem;
+        border-radius: 12px;
+        background: white;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: all 0.4s cubic-bezier(0.2, 0, 0.1, 1);
+        transform-origin: center center;
+        will-change: transform, width, height, position, z-index, box-shadow, opacity;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        contain: layout style;
+        overflow: hidden;
+    }
+    
+    /* Hide original meta on mobile */
+    .thought-meta {
+        display: none;
+    }
+    
+    /* Expanded card state (popup) */
+    .thought-card.expanded {
+        position: fixed !important;
+        top: 10% !important;
+        left: 5% !important;
+        right: 5% !important;
+        bottom: 10% !important;
+        width: 90% !important;
+        height: 80% !important;
+        margin: 0 !important;
+        padding: 1.5rem !important;
+        z-index: 1000;
+        border-radius: 16px !important;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.15) !important;
+        overflow: hidden !important;
+        transform: none !important;
+        transition: all 0.4s cubic-bezier(0.2, 0, 0.1, 1) !important;
+        -webkit-overflow-scrolling: touch;
+        background: rgba(255, 255, 255, 0.52) !important;
+        backdrop-filter: blur(4px) !important;
+        -webkit-backdrop-filter: blur(4px) !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    }
+    
+    /* Hide close button on regular cards */
+    .thought-card:not(.expanded) .close-popup {
+        display: none !important;
+    }
+    
+    /* Card content area */
+    .card-content {
+        padding: 1.5rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    
+    /* Close button for expanded card */
+    .close-popup {
+        position: fixed !important;
+        top: 1.5rem !important;
+        right: 1.5rem !important;
+        width: 2.8rem !important;
+        height: 2.8rem !important;
+        border-radius: 50% !important;
+        background: rgba(0, 0, 0, 0.9) !important;
+        color: white !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 1.8rem !important;
+        font-weight: 300 !important;
+        line-height: 1 !important;
+        z-index: 1002 !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        cursor: pointer !important;
+        opacity: 1 !important;
+        transition: all 0.2s ease !important;
+        -webkit-tap-highlight-color: transparent !important;
+        touch-action: manipulation !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.4) !important;
+        pointer-events: auto !important;
+        visibility: visible !important;
+        transform: none !important;
+    }
+    
+    /* Hide close button on non-expanded cards */
+    .thought-card:not(.expanded) .close-popup {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+    
+    /* Show close button on expanded cards */
+    .thought-card.expanded .close-popup {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+    }
+    
+    .close-popup:active,
+    .close-popup.active {
+        transform: scale(0.85) !important;
+        background: rgba(0, 0, 0, 0.95) !important;
+        transition: transform 0.1s ease, background 0.1s ease !important;
+    }
+    
+    /* Improve touch target size for mobile */
+    .close-popup::after {
+        content: '';
+        position: absolute;
+        top: -15px;
+        right: -15px;
+        bottom: -15px;
+        left: -15px;
+        z-index: -1;
+    }
+    
+    .thought-card:active {
+        transform: scale(0.98) translateZ(0);
+        transition: transform 0.1s ease;
+    }
+    
+    .thought-card.expanded:active {
+        transform: none !important;
+    }
+    
+    /* Overlay for expanded card */
+    .card-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        z-index: 999;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.35s step-end, backdrop-filter 0.35s ease;
+        touch-action: none;
+        -webkit-overflow-scrolling: touch;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        will-change: opacity, backdrop-filter;
+        -webkit-tap-highlight-color: transparent;
+        pointer-events: none;
+    }
+    
+    .card-overlay.visible {
+        visibility: visible;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        pointer-events: auto;
+        transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.35s step-start, backdrop-filter 0.35s ease;
+    }
+    
+    .card-popup-overlay.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    /* Card popup */
+    /* Card content layout */
+    .card-content {
+        padding: 1.5rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .card-main-content {
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-right: 0.5rem;
+        margin-right: -0.5rem;
+    }
+    
+    /* Metadata section - takes 30% of card height */
+    .card-metadata {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #eee;
+        flex-shrink: 0;
+        max-height: 30%;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* Ensure content doesn't overflow */
+    .card-content-inner {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* Reset desktop styles for mobile */
+    .thought-card .thought-content h2 {
+        font-size: 1.5rem;
+        margin: 0 0 1rem 0;
+        padding: 0;
+        border: none;
+    }
+    
+    .thought-card .thought-content p {
+        margin: 0 0 1rem 0;
+        line-height: 1.6;
+        font-size: 1rem;
+    }
+    
+    .thought-card .card-text p:last-child {
+        margin-bottom: 0;
+    }
+    
+    .flip-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.8s;
+        transform-style: preserve-3d;
+    }
+    
+    .flip-container.flipped {
+        transform: rotateY(180deg);
+    }
+    
+    .popup-front,
+    .popup-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    
+    .popup-back {
+        transform: rotateY(180deg);
+        background: white;
+    }
+    
+    .card-popup.visible {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    
+    .card-popup.visible {
+        transform: rotateY(0);
+    }
+    
+    .close-popup {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #666;
+    }
+    
+    .popup-front,
+    .popup-back {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    
+    .popup-text-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0.5rem 0.5rem 0.5rem 0;
+        margin: 1rem 0;
+    }
+    
+    .popup-text-content p {
+        margin: 1rem 0;
+        line-height: 1.8;
+        font-size: 1.2rem;
+        color: #333;
+    }
+    
+    .card-content h2 {
+        margin: 0 0 1rem 0;
+        color: #2c3e50;
+        font-size: 1.8rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .card-content p {
+        margin: 1rem 0;
+        line-height: 1.6;
+        font-size: 1.1rem;
+        color: #333;
+    }
+    
+    /* Metadata styles */
+    .metadata-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .metadata-item {
+        background: #f5f5f5;
+        padding: 0.4rem 0.8rem;
+        border-radius: 1rem;
+        font-size: 0.9rem;
+        color: #555;
+    }
+    
+    /* Swipe indicator */
+    .swipe-indicator {
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 5px;
+        background: rgba(255,255,255,0.7);
+        border-radius: 3px;
+        margin: 0 auto;
+        opacity: 0;
+        transition: all 0.3s ease;
+        z-index: 1002;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    
+    .expanded .swipe-indicator {
+        opacity: 1;
+        animation: fadeIn 0.3s 0.2s both, pulse 2s infinite;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    
+    @keyframes pulse {
+        0% { transform: translateX(-50%) scaleX(1); }
+        50% { transform: translateX(-50%) scaleX(0.8); }
+        100% { transform: translateX(-50%) scaleX(1); }
+    }
+    
+    .popup-back .thought-meta {
+        display: block;
+        margin-top: auto;
+        padding: 1.5rem 0 0;
+        border-top: 1px solid #eee;
+        background: white;
+        position: sticky;
+        bottom: 0;
+    }
+    
+    .popup-content .thought-category {
+        display: inline-block;
+        background: #f5f5f5;
+        color: #666;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .popup-content .added-by,
+    .popup-content .timestamp {
+        display: block;
+        color: #666;
+        font-size: 0.9rem;
+        margin: 0.25rem 0;
+    }
+}
+
 .section-title {
     color: #2c3e50;
     font-size: 1.8rem;
     margin: 2rem 0 1rem;
     padding-bottom: 0.5rem;
     border-bottom: 2px solid #eee;
+}
+
+/* Install button styles */
+.install-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000;
+    display: none;
+}
+
+.install-btn:hover {
+    background-color: #45a049;
+}
+
+.last-updated {
+    text-align: center;
+    color: #666;
+    font-size: 0.8em;
+    margin: 10px 0 5px 0;
+    padding: 5px 0;
+}
+
+/* Admin specific styles */
+.admin-page .main-content {
+    padding-top: 1.5rem;
+    padding-bottom: 3rem;
+}
+
+.admin-controls {
+    background: white;
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.25rem;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card h3 {
+    margin: 0 0 0.5rem;
+    font-size: 0.95rem;
+    color: #6c757d;
+}
+
+.stat-card p {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.quick-actions {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.quick-action-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background: #4CAF50;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.quick-action-btn:hover {
+    background: #45a049;
+}
+
+.user-list {
+    margin: 20px 0;
+}
+
+.user-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.user-info {
+    display: flex;
+    gap: 10px;
+}
+
+.user-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.checkbox-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+    .admin-stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+    
+    .stat-card {
+        padding: 1rem 0.75rem;
+    }
+    
+    .stat-card h3 {
+        font-size: 0.85rem;
+    }
+    
+    .stat-card p {
+        font-size: 1.5rem;
+    }
+    
+    .quick-actions {
+        flex-direction: column;
+    }
+    
+    .quick-action-btn {
+        width: 100%;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 1rem;
+        padding: 1.25rem;
+    }
 }
