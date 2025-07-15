@@ -411,7 +411,7 @@ const defaultThoughts = [
     {
         id: '52',
         title: "No Advantage, No Excuse",
-        content: "To be vinay, you have to start without the advantages other people have.",
+        content: "To be successful, you have to start without the advantages other people have.",
         addedBy: 'Thaughtify',
         timestamp: '2025-06-11T18:44:00',
         category: 'Perseverance'
