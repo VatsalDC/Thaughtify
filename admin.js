@@ -1,14 +1,3 @@
-// Prevent form submission from refreshing the page
-document.addEventListener('DOMContentLoaded', function() {
-    const userEditForm = document.getElementById('user-edit-form');
-    if (userEditForm) {
-        userEditForm.addEventListener('submit', function(event) {
-            event.preventDefault();
-            // Your form handling logic here
-        });
-    }
-});
-
 // Global default thoughts
 if (!window.defaultThoughts || !Array.isArray(window.defaultThoughts)) {
     window.defaultThoughts = [];
