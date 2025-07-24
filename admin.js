@@ -18,8 +18,7 @@ function loadAdminScripts() {
     // Scripts to load in order
     const scripts = [
         'shared-thoughts.js',
-        'js/navigation.js',
-        'admin.js'
+        'js/navigation.js'
     ];
     
     function loadScript(index) {
@@ -324,11 +323,11 @@ function filterThoughts(thoughts) {
     return thoughts.filter(thought => {
         // Apply category filter
         if (selectedCategory !== 'all') {
-            // Split categories by comma and trim whitespace, then check if any match the selected category
+            // Split categories by comma and trim whitespace, then check if any match the selected category (case-insensitive)
             const categories = thought.category 
-                ? thought.category.split(',').map(cat => cat.trim())
+                ? thought.category.split(',').map(cat => cat.trim().toLowerCase())
                 : [];
-            if (!categories.includes(selectedCategory)) {
+            if (!categories.includes(selectedCategory.toLowerCase())) {
                 return false;
             }
         }
@@ -362,6 +361,7 @@ function sortThoughtsList(thoughts) {
 
 // Display thoughts in the grid
 function displayThoughts(thoughts) {
+    console.log('Thoughts to display:', thoughts);
     const container = document.getElementById('thoughts-container');
     if (!container) {
         console.error('Thoughts container not found');
@@ -369,32 +369,83 @@ function displayThoughts(thoughts) {
     }
     
     if (!thoughts || thoughts.length === 0) {
-        container.innerHTML = '<div class="no-thoughts"><p>No thoughts found</p></div>';
+        container.innerHTML = `
+            <div class="no-thoughts">
+                <p>No thoughts found</p>
+                <button onclick="loadThoughts()" class="refresh-btn">Refresh</button>
+            </div>`;
+        // Hide loading overlay if present
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) overlay.style.display = 'none';
         return;
     }
     
     try {
-        container.innerHTML = '';
-        thoughts.forEach(thought => {
-            const card = document.createElement('div');
-            card.className = 'thought-card';
-            const formattedDate = formatDate(thought.timestamp);
-            card.innerHTML = `
-                <div class="thought-content">
+            // Set a fixed height for the container before updating content
+            const containerHeight = container.offsetHeight;
+            container.style.minHeight = containerHeight ? `${containerHeight}px` : '200px';
+            
+            // Show loading state
+            container.innerHTML = `
+                <div class="container-loading">
+                    <div class="spinner"></div>
+                    <div class="loading-text">Loading thoughts...</div>
+                </div>`;
+                
+            if (!thoughts || thoughts.length === 0) {
+                container.innerHTML = `
+                    <div class="no-thoughts">
+                        <p>No thoughts found</p>
+                        <button onclick="loadThoughts()" class="refresh-btn">Refresh</button>
+                    </div>`;
+                container.style.minHeight = ''; // Reset min-height
+                return;
+            }
+            
+            // Create and append thought cards (all invisible)
+            container.innerHTML = '';
+            thoughts.forEach(thought => {
+                const card = document.createElement('div');
+                card.className = 'thought-card';
+                const formattedDate = formatDate(thought.timestamp);
+                card.innerHTML = `
+                    <div class="thought-content">
                     <h2>${thought.title || 'Untitled'}</h2>
                     <p>${thought.content || ''}</p>
                 </div>
                 <div class="thought-meta">
-                    <span class="meta-item thought-category">${thought.category || 'Uncategorized'}</span>
-                    <span class="meta-item added-by">Added by: ${thought.addedBy || 'Admin'}</span>
-                    <span class="meta-item timestamp">${formattedDate}</span>
-                </div>
-            `;
-            container.appendChild(card);
-        });
+                        <span class="meta-item thought-category">${thought.category || 'Uncategorized'}</span>
+                        <span class="meta-item added-by">Added by: ${thought.addedBy || 'Admin'}</span>
+                        <span class="meta-item timestamp">${formattedDate}</span>
+                    </div>
+                `;
+                // Ensure invisible and animated
+                card.classList.remove('visible');
+                card.classList.add('animated');
+                container.appendChild(card);
+            });
+            // Remove loading spinner now (container is cleared)
+            // Reset container height after content is loaded
+            container.style.minHeight = '';
+            
+            // Fade in cards sequentially
+            const cards = container.querySelectorAll('.thought-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('visible');
+                    // After last card fades in, reset container height to auto
+                    if (index === cards.length - 1) {
+                        container.style.minHeight = '';
+                    }
+                }, index * 80);
+            });
     } catch (error) {
         console.error('Error rendering thoughts:', error);
-        container.innerHTML = '<div class="error"><p>Error displaying thoughts</p></div>';
+        container.innerHTML = `
+            <div class="error">
+                <p>Error displaying thoughts. Please try again.</p>
+                <button onclick="loadThoughts()" class="refresh-btn">Try Again</button>
+            </div>`;
     }
 }
 

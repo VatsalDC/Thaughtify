@@ -7,7 +7,9 @@
     <meta name="description" content="Admin dashboard for managing Thaughtify content">
     <title>Thaughtify Admin Dashboard</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Load admin.js which will handle script loading -->
     <script src="admin.js" defer></script>
+    </script>
 </head>
 <body class="admin admin-page">
     <nav class="nav">
@@ -90,7 +92,7 @@
         <h2 class="section-title">Thoughts live now</h2>
         <!-- Thoughts Grid -->
         <div class="thoughts-container" id="thoughts-container">
-            <!-- Thoughts will be added here by JS -->
+            <!-- Thoughts and loading spinner will be dynamically added here by JS -->
         </div>
 
     <!-- User Edit Modal -->
@@ -140,10 +142,13 @@
         </div>
     </main>
 
+    <link rel="stylesheet" href="styles.css">
+
     <footer class="site-footer">
         <div class="container">
             <p>&copy; 2025 Thaughtify Admin - Manage Content</p>
         </div>
     </footer>
+    <script src="admin.js"></script>
 </body>
 </html>
