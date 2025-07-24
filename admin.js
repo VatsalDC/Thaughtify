@@ -70,52 +70,87 @@ function setupEventListeners() {
         searchInput.addEventListener('input', () => loadThoughts());
     }
 
-    // Improved dropdown functionality
+    // Custom dropdown functionality
     const customSelects = document.querySelectorAll('.custom-select');
+    
     customSelects.forEach(select => {
         const selectedOption = select.querySelector('.selected-option');
         const optionsContainer = select.querySelector('.options-container');
+        const options = select.querySelectorAll('.option');
         const hiddenSelect = select.querySelector('select');
-
+        
+        // Set initial active option
+        const initialOption = select.querySelector(`.option[data-value="${hiddenSelect.value}"]`);
+        if (initialOption) {
+            selectedOption.textContent = initialOption.textContent;
+            initialOption.classList.add('active');
+        }
+        
         // Toggle dropdown
         selectedOption.addEventListener('click', (e) => {
             e.stopPropagation();
-            customSelects.forEach(otherSelect => {
-                if (otherSelect !== select) {
-                    otherSelect.classList.remove('open');
-                }
+            const isOpen = select.classList.contains('open');
+            
+            // Close all other open dropdowns
+            document.querySelectorAll('.custom-select').forEach(s => {
+                if (s !== select) s.classList.remove('open');
             });
-            select.classList.toggle('open');
+            
+            // Toggle this dropdown
+            const wasOpen = select.classList.contains('open');
+            select.classList.toggle('open', !wasOpen);
+            
+            // Set --index property for each option when opening
+            if (!wasOpen) {
+                const options = select.querySelectorAll('.option');
+                options.forEach((option, index) => {
+                    option.style.setProperty('--index', index);
+                });
+            }
         });
-
-        // Handle option selection
-        select.querySelectorAll('.option').forEach(option => {
-            option.addEventListener('click', () => {
-                const value = option.dataset.value;
-                selectedOption.textContent = option.textContent;
+        
+        // Select option
+        options.forEach(option => {
+            option.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const value = this.getAttribute('data-value');
+                
+                // Update selected option display
+                selectedOption.textContent = this.textContent;
+                
+                // Update hidden select value
                 hiddenSelect.value = value;
-                select.classList.remove('open');
                 
                 // Update active state
-                select.querySelectorAll('.option').forEach(opt => opt.classList.remove('active'));
-                option.classList.add('active');
+                options.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
                 
-                // Trigger change and reload
-                hiddenSelect.dispatchEvent(new Event('change'));
+                // Close dropdown
+                select.classList.remove('open');
+                
+                // Trigger change event on hidden select
+                const event = new Event('change', { bubbles: true });
+                hiddenSelect.dispatchEvent(event);
+                
+                // Reload thoughts with new sort
                 loadThoughts();
             });
         });
     });
-
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', () => {
-        customSelects.forEach(select => select.classList.remove('open'));
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.custom-select').forEach(select => {
+            select.classList.remove('open');
+        });
     });
-
-    // Close dropdowns on Escape key
-    document.addEventListener('keydown', (e) => {
+    
+    // Close dropdown when pressing Escape
+    document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
-            customSelects.forEach(select => select.classList.remove('open'));
+            document.querySelectorAll('.custom-select').forEach(select => {
+                select.classList.remove('open');
+            });
         }
     });
 }
@@ -488,41 +523,6 @@ window.addEventListener('load', function() {
 // Load thoughts when the page loads
 document.addEventListener('DOMContentLoaded', () => {
     // Ensure scroll is at the top when loading thoughts
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-    initializeAdmin();
-});
-
-// Mobile navigation toggle for admin
-document.addEventListener('DOMContentLoaded', function() {
-    const navToggle = document.querySelector('.nav-toggle');
-    const navMenu = document.querySelector('.nav-menu');
-    
-    if (navToggle && navMenu) {
-        navToggle.addEventListener('click', function() {
-            navMenu.classList.toggle('active');
-            this.classList.toggle('active');
-        });
-    }
-    
-    // Close mobile menu when clicking on a nav link
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', () => {
-            if (navMenu) navMenu.classList.remove('active');
-            if (navToggle) navToggle.classList.remove('active');
-        });
-    });
-});
-
-// Clean up any existing service workers
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(function(registrations) {
-        for(let registration of registrations) {
-            registration.unregister();
-        }
-    });
-}
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
