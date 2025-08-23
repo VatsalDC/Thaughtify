@@ -416,6 +416,86 @@ const defaultThoughts = [
         timestamp: '2025-06-11T18:44:00',
         category: 'Perseverance'
     },
+    {
+        id: '53',
+        title: "Small Eforts Matter",
+        content: "Success is the sum of small efforts, repeated day in and day out.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-23T11:28:00',
+        category: 'Perseverance'
+    },
+    {
+        id: '54',
+        title: "Progress Over Victory",
+        content: "The Aim of argument, or discussion should not be victorious but progress.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-23T11:29:00',
+        category: 'Communication'
+    },
+    {
+        id: '55',
+        title: "See the Distant Clearly",
+        content: "In strategy it is important to see distant things to get a close view.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-23T11:31:00',
+        category: 'Decision-Making, Strategy'
+    },
+    {
+        id: '56',
+        title: "Secret Knowledge Advantage",
+        content: "The secret of success is to know something no one else know.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-23T11:34:00',
+        category: 'Business'
+    },
+    {
+        id: '57',
+        title: "Together we Succeed",
+        content: "Coming together, sharing together, working together succeeding together.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-23T11:35:00',
+        category: 'Communication, Balance'
+    },
+    {
+        id: '58',
+        title: "Total Commitment Counts",
+        content: "A total commitment is paramount to reaching ultimate in performance.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-23T11:37:00',
+        category: 'Motivational'
+    },
+    {
+        id: '59',
+        title: "Strength of Character",
+        content: "Strength of character means the ability to overcome resentment against others.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-23T11:38:00',
+        category: 'Inspiration'
+    },
+    {
+        id: '60',
+        title: "Identity in Idleness",
+        content: "To be idle requires a strong sense of personal Identity.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-23T11:39:00',
+        category: 'Balance'
+    },
+    {
+        id: '61',
+        title: "Less Me, More We",
+        content: "Teamwork; Simply stated, it is less me and more we.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-23T11:40:00',
+        category: 'Communication'
+    },
+    {
+        id: '62',
+        title: "Effort Over Talent",
+        content: "Continuous effort not strength or intelligence is the key to our success.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-23T11:42:00',
+        category: 'Perseverance'
+    },
     
     
 ];
