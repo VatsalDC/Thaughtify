@@ -975,7 +975,6 @@ body.admin-page .thoughts-container {
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
-
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
@@ -1725,6 +1724,11 @@ footer {
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 1rem;
+    background: linear-gradient(45deg, #4a90e2, #50e3c2, #f5a623);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
 }
 
 .filter-select {
