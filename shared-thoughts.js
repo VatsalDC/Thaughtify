@@ -496,7 +496,158 @@ const defaultThoughts = [
         timestamp: '2025-08-23T11:42:00',
         category: 'Perseverance'
     },
-    
+    {
+        id: '63',
+        title: "Power of Personal Identity",
+        content: "Strengthening our Identity is one way of reinforcing people's confidence.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-29T17:30:00',
+        category: 'Inspiration'
+    },
+    {
+        id: '64',
+        title: "First, Get what you want. Second, Enjoy it",
+        content: "There are two things to Aim at to get what you want and Enjoy it.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-29T17:32:00',
+        category: 'Motivational'
+    },
+    {
+        id: '65',
+        title: "Education Inspires Action",
+        content: "The great aim of education is not knowledge, but action.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-29T17:34:00',
+        category: 'Inspiration'
+    },
+    {
+        id: '66',
+        title: "Unity Creates Strength",
+        content: "Individually we are a drop and Together we are an ocean.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-29T17:36:00',
+        category: 'Communication'
+    },
+    {
+        id: '67',
+        title: "Happiness Through Purpose",
+        content: "If you want to live happy life, tie to a goal, not to people or things.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-29T17:37:00',
+        category: 'Motivational'
+    },
+    {
+        id: '68',
+        title: "Courage to Be Yourself",
+        content: "One of the most courageous things you can do is to identify yourself.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-29T17:39:00',
+        category: 'Perseverance'
+    },
+    {
+        id: '69',
+        title: "Happiness by Helping Others",
+        content: "Happiness is a byproduct of ann effort to make someone else happy.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-29T17:42:00',
+        category: 'Inspiration'
+    },
+    {
+        id: '70',
+        title: "Collaboration Enables Achievement",
+        content: "Alone we can do so little; Together we can do so much.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-29T17:43:00',
+        category: 'Communication'
+    },
+    {
+        id: '71',
+        title: "Clear Organizational Purpose",
+        content: "The Aim of an organization should be clear to everyone working in it.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-29T17:44:00',
+        category: 'Business, Communication'
+    },
+    {
+        id: '72',
+        title: "Commitment Drives Greatness",
+        content: "Great organizations demand High level of Commitment.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-29T17:45:00',
+        category: 'Business'
+    },
+    {
+        id: '73',
+        title: "Strive for Your Best",
+        content: "Always Aim to be the best in what you do and give 100%.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-29T17:47:00',
+        category: 'Motivational'
+    },
+    {
+        id: '74',
+        title: "Strategy Before Planning",
+        content: "Strategy is not the consequence of planning. but the opposite: It's the starting point.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-29T17:49:00',
+        category: 'Motivational'
+    },
+    {
+        id: '75',
+        title: "Measure Strategy by Results",
+        content: "However beautiful the strategy, you should occasionally look at the Results.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-29T17:50:00',
+        category: 'Business'
+    },
+    {
+        id: '76',
+        title: "Power of True Commitment",
+        content: "No one can keep a Committed person from succeeding.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-29T17:51:00',
+        category: 'Perseverance, Motivational'
+    },
+    {
+        id: '77',
+        title: "Strength from Facing Fears",
+        content: "Each time we face our fear, we gain strength and courage in the doing.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-29T17:52:00',
+        category: 'Perseverance'
+    },
+    {
+        id: '78',
+        title: "Goodness with a Purpose",
+        content: "Aim above morality, Be not simple good, Be good for something.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-29T17:53:00',
+        category: 'Inspiration'
+    },
+    {
+        id: '79',
+        title: "Creativity Fuels Innovation",
+        content: "Necessity is the mother of invention but its father is creativity.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-29T17:55:00',
+        category: 'Business, Inspiration'
+    },
+    {
+        id: '80',
+        title: "Balance Planning and Action",
+        content: "Planning without action is futile, action without planning is fatal.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-29T17:55:00',
+        category: 'Decision-Making, Business'
+    },
+    {
+        id: '81',
+        title: "Turn Worry Into Planning",
+        content: "Let our advance worrying become advance thinking and planning.",
+        addedBy: 'Thaughtify',
+        timestamp: '2025-08-29T17:56:00',
+        category: 'Time Management, Decision-Making'
+    }
     
 ];
 
