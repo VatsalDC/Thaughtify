@@ -1,6 +1,6 @@
 Thaughtify
 
-This is a simple website where users can find 'Thoughts' within many categories like: motivation, isnpiration, business, and many more. I reguarly add new thoughts over here and i want to implement a feature to also let the users to add thoughts but for now its a little compliacted for me!
+This is a simple website where users can find 'Thoughts' within many categories like: motivation, isnpiration, business, and many more. I reguarly add new thoughts over here and i want to implement a feature to also let the users to add thoughts but for now its a little complicated for me!
 
 For now, users can just copy the thought and paste it wherever they want and there are no charges and no advertisements in it.
 
